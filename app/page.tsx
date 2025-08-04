@@ -129,6 +129,7 @@ export default function Home() {
                   <p className="text-sm text-gray-500">
                     {exp.category} • {new Date(exp.date).toLocaleDateString()}
                   </p>
+                  <p className="text-sm text-gray-500">{exp.description}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
