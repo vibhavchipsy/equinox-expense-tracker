@@ -122,7 +122,7 @@ export default function Home() {
                       Sign In
                     </button>
                     <p className="text-sm text-center">
-                      Don't have an account?{' '}
+                      Dont have an account?{' '}
                       <button
                         onClick={() => setMode('signup')}
                         className="text-blue-600 underline"
