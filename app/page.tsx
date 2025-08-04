@@ -90,7 +90,7 @@ export default function Home() {
           // 🔒 SHOW LOGIN FORM IF NOT LOGGED IN
           <div className="bg-white shadow-md rounded-xl p-6 mb-6 space-y-4">
               <h2 className="text-xl font-semibold text-center">
-                {mode === 'login' ? 'Login' : 'Register'}
+                {mode === 'login' ? 'Login' : 'Register'} 
               </h2>
 
               <input
