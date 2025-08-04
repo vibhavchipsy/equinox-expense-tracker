@@ -11,6 +11,8 @@ type Expense = {
 };
 
 export default function Home() {
+  const [user, setUser] = useState<any>(null);
+  const [authForm, setAuthForm] = useState({ email: '', password: '' });
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [form, setForm] = useState({ amount: '', category: '', date: '', description: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -18,15 +20,16 @@ export default function Home() {
 
 
   useEffect(() => {
-    const getUserAndFetch = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserId(user.id);
-        fetchExpenses(user.id);
-      }
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
     };
-    getUserAndFetch();
-  }, []);  
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) fetchExpenses(user.id);
+  }, [user]);
 
   const fetchExpenses = async (uid: string) => {
     const { data, error } = await supabase
@@ -52,20 +55,20 @@ export default function Home() {
     };
 
     const action = editingId
-      ? supabase.from('expenses').update(form).eq('id', editingId)
-      : supabase.from('expenses').insert([dataToSend]);
+      ? supabase.from('expenses').update(form).eq('id', editingId).eq('user_id', user.id)
+      : supabase.from('expenses').insert([{ ...form, user_id: user.id }]);
 
     const { error } = await action;
     if (!error) {
       setForm({ amount: '', category: '', date: '', description: '' });
       setEditingId(null);
-      fetchExpenses(userId);
+      fetchExpenses(user.id);
     }
   };
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from('expenses').delete().eq('id', id);
-    if (!error && userId) fetchExpenses(userId);
+    if (!error && userId) fetchExpenses(user.id);
   };
 
   const handleEdit = (exp: Expense) => {
@@ -82,92 +85,136 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
       <div className="w-full max-w-xl">
-        <h1 className="text-3xl font-bold text-center mb-6">💸 Expense Tracker</h1>
-
-        <div className="bg-white shadow-md rounded-xl p-6 mb-6 space-y-4">
-          <div className="flex flex-col gap-3 md:gap-4">
+        {!user ? (
+          // 🔒 SHOW LOGIN FORM IF NOT LOGGED IN
+          <div className="bg-white shadow-md rounded-xl p-6 mb-6 space-y-4">
+            <h2 className="text-xl font-semibold">Login or Sign Up</h2>
             <input
-              type="number"
-              placeholder="Amount"
-              value={form.amount}
-              onChange={(e) => setForm({ ...form, amount: e.target.value })}
-              className="flex-1 border border-gray-300 rounded-md p-2"
-            />
-            <input
-              type="text"
-              placeholder="Category"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="flex-1 border border-gray-300 rounded-md p-2"
-            />
-            <input
-              type="date"
-              value={form.date}
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="flex-1 border border-gray-300 rounded-md p-2"
-            />
-            <textarea
-              placeholder="Description"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              type="email"
+              placeholder="Email"
+              value={authForm.email}
+              onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
               className="w-full border border-gray-300 rounded-md p-2"
             />
-          </div>
-          <div className="flex gap-4">
-            <button
-              onClick={handleSubmit}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-            >
-              {editingId ? 'Update' : 'Add'} Expense
-            </button>
-            {editingId && (
+            <input
+              type="password"
+              placeholder="Password"
+              value={authForm.password}
+              onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+              className="w-full border border-gray-300 rounded-md p-2"
+            />
+            <div className="flex gap-4">
               <button
-                onClick={() => {
-                  setForm({ amount: '', category: '', date: '', description: '' });
-                  setEditingId(null);
+                onClick={async () => {
+                  await supabase.auth.signInWithPassword(authForm);
+                  location.reload(); // Refresh to update UI
                 }}
-                className="text-sm text-gray-500 underline"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md"
               >
-                Cancel
+                Sign In
               </button>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {expenses.length === 0 ? (
-            <p className="text-center text-gray-500">No expenses yet.</p>
-          ) : (
-            expenses.map((exp) => (
-              <div
-                key={exp.id}
-                className="bg-white shadow-sm rounded-md p-4 flex justify-between items-center"
+              <button
+                onClick={async () => {
+                  await supabase.auth.signUp(authForm);
+                  alert("Signed up! Now sign in.");
+                }}
+                className="bg-green-600 text-white px-4 py-2 rounded-md"
               >
-                <div>
-                  <p className="font-medium text-lg">₹{exp.amount}</p>
-                  <p className="text-sm text-gray-500">
-                    {exp.category} • {new Date(exp.date).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-500">{exp.description}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEdit(exp)}
-                    className="text-blue-600 hover:underline text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(exp.id)}
-                    className="text-red-600 hover:underline text-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
+                Sign Up
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-3xl font-bold text-center mb-6">💸 Expense Tracker</h1>
+
+            <div className="bg-white shadow-md rounded-xl p-6 mb-6 space-y-4">
+              <div className="flex flex-col gap-3 md:gap-4">
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  value={form.amount}
+                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                  className="flex-1 border border-gray-300 rounded-md p-2"
+                />
+                <input
+                  type="text"
+                  placeholder="Category"
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  className="flex-1 border border-gray-300 rounded-md p-2"
+                />
+                <input
+                  type="date"
+                  value={form.date}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  className="flex-1 border border-gray-300 rounded-md p-2"
+                />
+                <textarea
+                  placeholder="Description"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  className="w-full border border-gray-300 rounded-md p-2"
+                />
               </div>
-            ))
-          )}
-        </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleSubmit}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                >
+                  {editingId ? 'Update' : 'Add'} Expense
+                </button>
+                {editingId && (
+                  <button
+                    onClick={() => {
+                      setForm({ amount: '', category: '', date: '', description: '' });
+                      setEditingId(null);
+                    }}
+                    className="text-sm text-gray-500 underline"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {expenses.length === 0 ? (
+                <p className="text-center text-gray-500">No expenses yet.</p>
+              ) : (
+                expenses.map((exp) => (
+                  <div
+                    key={exp.id}
+                    className="bg-white shadow-sm rounded-md p-4 flex justify-between items-center"
+                  >
+                    <div>
+                      <p className="font-medium text-lg">₹{exp.amount}</p>
+                      <p className="text-sm text-gray-500">
+                        {exp.category} • {new Date(exp.date).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-gray-500">{exp.description}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(exp)}
+                        className="text-blue-600 hover:underline text-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(exp.id)}
+                        className="text-red-600 hover:underline text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
+                ))
+              )}
+            </div>
+          </>
+        )}
       </div>
     </main>
   );
