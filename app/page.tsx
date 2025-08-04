@@ -14,39 +14,58 @@ export default function Home() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [form, setForm] = useState({ amount: '', category: '', date: '', description: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
 
   useEffect(() => {
-    fetchExpenses();
-  }, []);
+    const getUserAndFetch = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        fetchExpenses(user.id);
+      }
+    };
+    getUserAndFetch();
+  }, []);  
 
-  const fetchExpenses = async () => {
+  const fetchExpenses = async (uid: string) => {
     const { data, error } = await supabase
       .from('expenses')
       .select('*')
+      .eq('user_id', uid)
       .order('date', { ascending: false });
+  
     if (!error) setExpenses(data || []);
   };
+  
 
   const handleSubmit = async () => {
-    const { amount, category, date } = form;
-    if (!amount || !category || !date) return;
+    const { amount, category, date, description } = form;
+    if (!amount || !category || !date ||!userId) return;
+
+    const dataToSend = {
+      amount: Number(amount),
+      category,
+      date,
+      description,
+      user_id: userId
+    };
 
     const action = editingId
       ? supabase.from('expenses').update(form).eq('id', editingId)
-      : supabase.from('expenses').insert([form]);
+      : supabase.from('expenses').insert([dataToSend]);
 
     const { error } = await action;
     if (!error) {
-      // setForm({ amount: '', category: '', date: '' });
       setForm({ amount: '', category: '', date: '', description: '' });
       setEditingId(null);
-      fetchExpenses();
+      fetchExpenses(userId);
     }
   };
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from('expenses').delete().eq('id', id);
-    if (!error) fetchExpenses();
+    if (!error && userId) fetchExpenses(userId);
   };
 
   const handleEdit = (exp: Expense) => {
