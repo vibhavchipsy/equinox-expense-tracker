@@ -11,6 +11,7 @@ type Expense = {
 };
 
 export default function Home() {
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [user, setUser] = useState<any>(null);
   const [authForm, setAuthForm] = useState({ email: '', password: '' });
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -88,42 +89,75 @@ export default function Home() {
         {!user ? (
           // 🔒 SHOW LOGIN FORM IF NOT LOGGED IN
           <div className="bg-white shadow-md rounded-xl p-6 mb-6 space-y-4">
-            <h2 className="text-xl font-semibold">Login or Sign Up</h2>
-            <input
-              type="email"
-              placeholder="Email"
-              value={authForm.email}
-              onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
-              className="w-full border border-gray-300 rounded-md p-2"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={authForm.password}
-              onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
-              className="w-full border border-gray-300 rounded-md p-2"
-            />
-            <div className="flex gap-4">
-              <button
-                onClick={async () => {
-                  await supabase.auth.signInWithPassword(authForm);
-                  location.reload(); // Refresh to update UI
-                }}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={async () => {
-                  await supabase.auth.signUp(authForm);
-                  alert("Signed up! Now sign in.");
-                }}
-                className="bg-green-600 text-white px-4 py-2 rounded-md"
-              >
-                Sign Up
-              </button>
+              <h2 className="text-xl font-semibold text-center">
+                {mode === 'login' ? 'Login' : 'Register'}
+              </h2>
+
+              <input
+                type="email"
+                placeholder="Email"
+                value={authForm.email}
+                onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                className="w-full border border-gray-300 rounded-md p-2"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={authForm.password}
+                onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                className="w-full border border-gray-300 rounded-md p-2"
+              />
+
+              <div className="flex flex-col gap-3">
+                {mode === 'login' ? (
+                  <>
+                    <button
+                      onClick={async () => {
+                        const { error } = await supabase.auth.signInWithPassword(authForm);
+                        if (!error) location.reload();
+                        else alert(error.message);
+                      }}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md"
+                    >
+                      Sign In
+                    </button>
+                    <p className="text-sm text-center">
+                      Don't have an account?{' '}
+                      <button
+                        onClick={() => setMode('signup')}
+                        className="text-blue-600 underline"
+                      >
+                        Register
+                      </button>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={async () => {
+                        const { error } = await supabase.auth.signUp(authForm);
+                        if (!error) {
+                          alert('Signed up! You can now log in.');
+                          setMode('login');
+                        } else alert(error.message);
+                      }}
+                      className="bg-green-600 text-white px-4 py-2 rounded-md"
+                    >
+                      Sign Up
+                    </button>
+                    <p className="text-sm text-center">
+                      Already have an account?{' '}
+                      <button
+                        onClick={() => setMode('login')}
+                        className="text-blue-600 underline"
+                      >
+                        Log in
+                      </button>
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
         ) : (
           <>
             <h1 className="text-3xl font-bold text-center mb-6">💸 Expense Tracker</h1>
