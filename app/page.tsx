@@ -160,6 +160,17 @@ export default function Home() {
             </div>
         ) : (
           <>
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  location.reload();
+                }}
+                className="text-sm text-gray-600 underline hover:text-red-600"
+              >
+                Logout
+              </button>
+            </div>
             <h1 className="text-3xl font-bold text-center mb-6">💸 Expense Tracker</h1>
 
             <div className="bg-white shadow-md rounded-xl p-6 mb-6 space-y-4">
