@@ -1,12 +1,23 @@
 'use client';
+
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { redirect } from 'next/navigation';
+import { ReactNode } from 'react';
 
-export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+type Props = {
+  children: ReactNode;
+};
+
+export default function AuthenticatedLayout({ children }: Props) {
   const { user, loading } = useAuth();
 
-  if (loading) return <p className="text-center mt-20">Loading...</p>;
-  if (!user) return redirect('/auth');
+  if (loading) {
+    return <p className="text-center">Loading...</p>;
+  }
 
-  return <div className="min-h-screen bg-gray-100">{children}</div>;
+  if (!user) {
+    redirect('/auth');
+  }
+
+  return <>{children}</>;
 }

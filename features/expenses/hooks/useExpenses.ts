@@ -7,8 +7,12 @@ import {
   updateExpense,
   deleteExpense,
 } from '../services/expenseService';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
-export const useExpenses = (userId: string | null) => {
+export const useExpenses = () => {
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Expense | null>(null);
@@ -30,7 +34,8 @@ export const useExpenses = (userId: string | null) => {
   }, [userId]);
 
   const addExpense = async (data: Omit<Expense, 'id'>) => {
-    await createExpense(data);
+    if (!userId) return;
+    await createExpense({ ...data, user_id: userId });
     loadExpenses();
   };
 
