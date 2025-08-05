@@ -1,4 +1,5 @@
 import { Expense } from '../types';
+import { formatDate } from '@/utils/dateUtils';
 
 type Props = {
   expense: Expense;
@@ -12,7 +13,7 @@ export default function ExpenseItem({ expense, onEdit, onDelete }: Props) {
       <div>
         <p className="font-medium text-lg">₹{expense.amount}</p>
         <p className="text-sm text-gray-500">
-          {expense.category} • {new Date(expense.date).toLocaleDateString()}
+          {expense.category} • {formatDate(expense.date)}
         </p>
         {expense.description && <p className="text-sm text-gray-500">{expense.description}</p>}
       </div>
