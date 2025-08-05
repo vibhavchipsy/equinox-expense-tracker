@@ -20,7 +20,8 @@ export default function DashboardPage() {
     <AuthenticatedLayout>
       <main className="flex flex-col items-center">
         <div className="max-w-xl w-full">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between mb-4">
+          <p className="font-sm text-lg">Hi, </p>
             <button
               onClick={async () => {
                 await signOut();
