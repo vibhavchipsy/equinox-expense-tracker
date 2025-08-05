@@ -12,7 +12,11 @@ export default function AuthenticatedLayout({ children }: Props) {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <p className="text-center">Loading...</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-center text-black-600">Loading...</p>
+      </div>
+    );
   }
 
   if (!user) {
