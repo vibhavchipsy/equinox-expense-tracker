@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Expense } from '../types';
 
 type Props = {
-  onSubmit: (data: Omit<Expense, 'id'>) => void;
+  onSubmit: (data: Omit<Expense, 'id' | 'user_id'>) => void;
   onUpdate: (id: string, data: Partial<Expense>) => void;
   editing: Expense | null;
   cancelEdit: () => void;
@@ -41,8 +41,7 @@ export default function ExpenseForm({
       amount: Number(form.amount),
       category: form.category,
       date: form.date,
-      description: form.description,
-      user_id: userId,
+      description: form.description
     };
     if (editing) {
       onUpdate(editing.id, payload);
