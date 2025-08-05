@@ -16,7 +16,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 p-4">{children}</main>
 
         {/* Bottom nav for mobile only */}
-        <footer className="block md:hidden p-4 bg-white fixed w-full bottom-0">
+        <footer className="block md:hidden p-4 pt-0 bg-white fixed w-full bottom-0">
           <BottomNav />
         </footer>
       </div>

@@ -12,7 +12,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="flex justify-around py-2 bg-white border-t">
+    <nav className="flex justify-around pb-2 pt-4 bg-white border-t">
       {links.map((link) => (
         <Link
           key={link.href}
