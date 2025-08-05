@@ -7,3 +7,4 @@ export type Expense = {
     user_id: string;
   };
   
+  export type ExpenseFormData = Omit<Expense, 'id' | 'user_id'>;

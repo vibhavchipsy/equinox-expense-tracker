@@ -1,9 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Expense } from '../types';
+import { Expense, ExpenseFormData } from '../types';
 
 type Props = {
-  onSubmit: (data: Omit<Expense, 'id' | 'user_id'>) => void;
+  onSubmit: (data: ExpenseFormData) => void;
   onUpdate: (id: string, data: Partial<Expense>) => void;
   editing: Expense | null;
   cancelEdit: () => void;

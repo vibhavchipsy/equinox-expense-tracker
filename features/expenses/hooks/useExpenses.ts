@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Expense } from '../types';
+import { Expense, ExpenseFormData } from '../types';
 import {
   fetchExpenses,
   createExpense,
@@ -33,7 +33,7 @@ export const useExpenses = () => {
     if (userId) loadExpenses();
   }, [userId]);
 
-  const addExpense = async (data: Omit<Expense, 'id'>) => {
+  const addExpense = async (data: ExpenseFormData) => {
     if (!userId) return;
     await createExpense({ ...data, user_id: userId });
     loadExpenses();
