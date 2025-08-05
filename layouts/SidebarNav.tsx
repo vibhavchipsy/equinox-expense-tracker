@@ -7,8 +7,8 @@ export default function SidebarNav() {
 
   const links = [
     { href: '/dashboard', label: 'Home' },
-    { href: '/dashboard/add', label: 'Add Expense' },
-    { href: '/dashboard/expenses', label: 'View Expenses' },
+    { href: '/dashboard', label: 'Add Expense' },
+    { href: '/dashboard', label: 'View Expenses' },
   ];
 
   return (

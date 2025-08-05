@@ -7,8 +7,8 @@ export default function BottomNav() {
 
   const links = [
     { href: '/dashboard', label: '🏠' },
-    { href: '/dashboard/add', label: '+' }, // big center add button (if needed)
-    { href: '/dashboard/expenses', label: '📊' },
+    { href: '/dashboard', label: '+' }, // big center add button (if needed)
+    { href: '/dashboard', label: '📊' },
   ];
 
   return (
