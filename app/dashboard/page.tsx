@@ -5,8 +5,10 @@ import ExpenseForm from '@/features/expenses/components/ExpenseForm';
 import ExpenseList from '@/features/expenses/components/ExpenseList';
 import { useExpenses } from '@/features/expenses/hooks/useExpenses';
 import { signOut } from '@/features/auth/services/authService';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const {
     expenses,
     editing,
@@ -21,7 +23,9 @@ export default function DashboardPage() {
       <main className="flex flex-col items-center">
         <div className="max-w-xl w-full">
           <div className="flex justify-between mb-4">
-          <p className="font-sm text-lg">Hi, </p>
+            <p className="text-sm text-gray-700">
+              Hi{user?.email ? `, ${user.email}` : ''} 👋
+            </p>
             <button
               onClick={async () => {
                 await signOut();
