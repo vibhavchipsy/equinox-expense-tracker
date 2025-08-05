@@ -1,0 +1,56 @@
+'use client';
+import { useState } from 'react';
+import { signIn, signUp } from '../services/authService';
+
+export default function AuthForm() {
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleAuth = async () => {
+    const fn = mode === 'login' ? signIn : signUp;
+    const { error } = await fn(email, password);
+    if (error) {
+      alert(error.message);
+    } else {
+      location.reload();
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto bg-white rounded-xl shadow-md p-6 space-y-4">
+      <h2 className="text-xl font-semibold text-center">
+        {mode === 'login' ? 'Login' : 'Register'}
+      </h2>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full border p-2 rounded-md"
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full border p-2 rounded-md"
+      />
+      <button
+        onClick={handleAuth}
+        className="w-full bg-blue-600 text-white py-2 rounded-md"
+      >
+        {mode === 'login' ? 'Sign In' : 'Sign Up'}
+      </button>
+      <p className="text-sm text-center">
+        {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
+        <button
+          className="text-blue-500 underline"
+          onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+        >
+          {mode === 'login' ? 'Register' : 'Login'}
+        </button>
+      </p>
+    </div>
+  );
+}
