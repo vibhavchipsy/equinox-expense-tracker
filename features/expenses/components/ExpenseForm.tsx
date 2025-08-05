@@ -67,6 +67,7 @@ export default function ExpenseForm({
         onChange={(e) => setForm({ ...form, category: e.target.value })}
         className="w-full border p-2 rounded"
       />
+      <label className="block text-sm text-gray-600">Date</label>
       <input
         type="date"
         value={form.date}
