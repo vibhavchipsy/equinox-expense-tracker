@@ -3,6 +3,7 @@
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
+import AppShell from './AppShell';
 
 type Props = {
   children: ReactNode;
@@ -23,5 +24,7 @@ export default function AuthenticatedLayout({ children }: Props) {
     redirect('/auth');
   }
 
-  return <>{children}</>;
+  // return <>{children}</>;
+  // Wrap children with navigation
+  return <AppShell>{children}</AppShell>;
 }

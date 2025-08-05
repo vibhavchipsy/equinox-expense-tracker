@@ -18,7 +18,7 @@ export default function DashboardPage() {
 
   return (
     <AuthenticatedLayout>
-      <main className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
+      <main className="flex flex-col items-center">
         <div className="max-w-xl w-full">
           <div className="flex justify-end mb-4">
             <button
