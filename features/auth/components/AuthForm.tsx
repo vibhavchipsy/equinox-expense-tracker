@@ -1,11 +1,13 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; 
 import { signIn, signUp } from '../services/authService';
 
 export default function AuthForm() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleAuth = async () => {
     const fn = mode === 'login' ? signIn : signUp;
@@ -13,7 +15,7 @@ export default function AuthForm() {
     if (error) {
       alert(error.message);
     } else {
-      location.reload();
+      router.push('/dashboard');
     }
   };
 
