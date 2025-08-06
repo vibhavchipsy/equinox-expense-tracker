@@ -11,11 +11,13 @@ export default function AuthForm() {
 
   const handleAuth = async () => {
     const fn = mode === 'login' ? signIn : signUp;
-    const { error } = await fn(email, password);
-    if (error) {
-      alert(error.message);
-    } else {
+
+    try {
+      await fn(email, password); // no destructuring needed
       router.push('/dashboard');
+    } catch (error: any) {
+      console.error(error);
+      // Optional: could show inline error here if needed
     }
   };
 
