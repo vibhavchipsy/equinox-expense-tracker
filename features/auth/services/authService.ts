@@ -31,7 +31,6 @@ export const signOut = async () => {
     notify.error('Logout failed');
     throw error;
   }
-  notify.success('Logged out');
 };
 
 export const getCurrentUser = async () => {

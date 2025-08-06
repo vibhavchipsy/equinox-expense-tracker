@@ -1,13 +1,19 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 import { signIn, signUp } from '../services/authService';
+import { notify } from '@/lib/toastService';
 
 export default function AuthForm() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    notify.info('Please login to continue');
+  }, []);
+  
 
   const handleAuth = async () => {
     const fn = mode === 'login' ? signIn : signUp;
